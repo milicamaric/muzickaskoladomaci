@@ -12,25 +12,72 @@
 </head>
 
 <body>
-    <h1>Spisak ucenika</h1>
+    <?php
+    // TODO: uzmi iz baze
+    $kursevi = array(
+        array(
+            'id' => 1,
+            'instrument_ime' => 'Gitara',
+            'profesor_ime' => 'Jelisaveta Ostojic'
+        ),
+        array(
+            'id' => 2,
+            'instrument_ime' => 'Klavir',
+            'profesor_ime' => 'Veljko Trifunovic'
+        ),
+        array(
+            'id' => 3,
+            'instrument_ime' => 'Violina',
+            'profesor_ime' => 'Miona Petrovic'
+        ),
+        array(
+            'id' => 4,
+            'instrument_ime' => 'Bubnjevi',
+            'profesor_ime' => 'Goran Markovic'
+        ), array(
+            'id' => 5,
+            'instrument_ime' => 'Flauta',
+            'profesor_ime' => 'Olga Petrov'
+        )
+    );
+    ?>
+    <form action="" method="POST">
+        <h1>➕ Dodaj novog ucenika 👩‍🎓</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Ime</th>
+                    <th>Prezime</th>
+                    <th>Datum rodjenja</th>
+                    <th>Kontakt telefon</th>
+                    <th>Kursevi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="text" name="ime" /></td>
+                    <td><input type="text" name="prezime" /></td>
+                    <td><input type="text" name="datum_rodjenja" /></td>
+                    <td><input type="text" name="telefon" /></td>
+                    <td>
+                        <?php foreach ($kursevi as $kurs) : ?>
+                            <input type="checkbox" id="<?php echo $kurs['id']; ?>" name="kursevi" value="<?php echo $kurs['id'] ?>">
+                            <label for="<?php echo $kurs['id'] ?>"><?php echo $kurs['instrument_ime'] . " (" . $kurs['profesor_ime'] . ")"; ?></label><br>
+                        <?php endforeach; ?>
+                    </td>
+                </tr>
+        </table>
+        <input type="submit" value="Dodaj" />
+    </form>
+
+    <h1> 📓 Spisak ucenika 👨‍🎓</h1>
     <label for="kursevi">Odaberite kurs:</label>
     <select name="kursevi" id="kursevi">
-        <?php
-        // TODO: uzmi iz baze
-        $instrumenti = array(
-            array(
-                'id' => 1,
-                'ime' => 'Gitara'
-            ),
-            array(
-                'id' => 2,
-                'ime' => 'Klavir'
-            )
-        );
-        foreach ($instrumenti as $instrument) : ?>
-            <option value=<?php echo $instrument['id']; ?>><?php echo $instrument['ime']; ?></option>
+        <?php foreach ($kursevi as $kurs) : ?>
+            <option value=<?php echo $kurs['id']; ?>><?php echo $kurs['instrument_ime'] . " (" . $kurs['profesor_ime'] . ")"; ?></option>
         <?php endforeach; ?>
     </select>
+    <p> </p>
 
     <table class="table table-bordered">
         <thead>
@@ -50,18 +97,46 @@
             $ucenici = array(
                 array(
                     'id' => 1,
-                    'ime' => 'Gitara',
+                    'ime' => 'Milos',
                     'prezime' => 'Bajagic',
-                    'datum_rodjenja' => mktime(1, 2, 3, 4, 5, 2006),
+                    'datum_rodjenja' => date('d.m.Y', mktime(0, 0, 0, 4, 5, 2006)),
                     'telefon' => '064999666',
-                    'datum_upisa' => mktime(1, 2, 3, 4, 5, 2020),
+                    'datum_upisa' => date('d.m.Y', mktime(0, 0, 0, 6, 7, 2020)),
                     'kursevi' => array(
                         array(
-                            'instrument_ime' => 'Gitara',
+                            'kurs_ime' => 'Gitara',
                             'profesor_ime' => 'Jelisaveta Ostojic'
                         )
                     )
                 ),
+                array(
+                    'id' => 2,
+                    'ime' => 'Milica',
+                    'prezime' => 'Jakovljevic',
+                    'datum_rodjenja' => date('d.m.Y', mktime(0, 0, 0, 8, 3, 1998)),
+                    'telefon' => '063305904',
+                    'datum_upisa' => date('d.m.Y', mktime(0, 0, 0, 1, 7, 2020)),
+                    'kursevi' => array(
+                        array(
+                            'kurs_ime' => 'Violona',
+                            'profesor_ime' => 'Miona Petrovic'
+                        )
+                    )
+                ),
+                array(
+                    'id' => 3,
+                    'ime' => 'Jana',
+                    'prezime' => 'Djurdjevic',
+                    'datum_rodjenja' => date('d.m.Y', mktime(0, 0, 0, 5, 10, 1998)),
+                    'telefon' => '0649517695',
+                    'datum_upisa' => date('d.m.Y', mktime(0, 0, 0, 7, 7, 2020)),
+                    'kursevi' => array(
+                        array(
+                            'kurs_ime' => 'Bubnjevi',
+                            'profesor_ime' => 'Goran Markovic'
+                        )
+                    )
+                )
             );
 
             foreach ($ucenici as $ucenik) :
@@ -76,7 +151,7 @@
                     <td>
                         <ul><?php
                             foreach ($ucenik['kursevi'] as $kurs) :
-                                echo "<li>" . $kurs['instrument_ime'] . " (" . $kurs['profesor_ime'] . ")</li>";
+                                echo "<li>" . $kurs['kurs_ime'] . " (" . $kurs['profesor_ime'] . ")</li>";
                             endforeach;
                             ?>
                         </ul>
