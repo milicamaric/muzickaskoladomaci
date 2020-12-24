@@ -20,3 +20,11 @@ Funkcionalnosti koje je moguce koristiti putem web interfejsa:
 * [AJAX] Menjanje kurseva koje ucenik pohadja
 * [PHP.$_DELETE] Ispisivanje ucenika iz skole
 * [AJAX, pretraga, sortiranje, PHP.date] Prikaz ucenika koji pohadjaju odredjeni kurs
+
+## Pokretanje programa
+
+MySQL server mora biti pokrenut, i baza "muzickaskola" kreirana.
+
+```sql
+CREATE DATABASE muzickaskola;
+```

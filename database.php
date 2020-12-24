@@ -2,9 +2,9 @@
 
 class Database
 {
-    private $hostname = "localhost";
+    private $hostname = "127.0.0.1";
     private $username = "root";
-    private $password = "";
+    private $password = "toor";
     private $dbname;
     private $dblink;
     private $result;
@@ -14,10 +14,10 @@ class Database
     function __construct($par_dbname)
     {
         $this->dbname = $par_dbname;
-        $this->Connect();
+        $this->connect();
     }
 
-    function Connect()
+    function connect()
     {
         $this->dblink = new mysqli($this->hostname, $this->username, $this->password, $this->dbname);
         if ($this->dblink->connect_errno) {
@@ -27,7 +27,7 @@ class Database
         $this->dblink->set_charset("utf8");
     }
 
-    function ExecuteQuery($query)
+    function executeQuery($query)
     {
         $this->result = $this->dblink->query($query);
         if ($this->result) {
@@ -58,7 +58,7 @@ class Database
             $q .= ' ORDER BY ' . $order;
         }
 
-        $this->ExecuteQuery($q);
+        $this->executeQuery($q);
     }
 
     function insert($table, $rows, $values)
@@ -70,7 +70,7 @@ class Database
         }
         $q .= " VALUES($query_values)";
         // echo($q);
-        if ($this->ExecuteQuery($q)) {
+        if ($this->executeQuery($q)) {
             return true;
         } else {
             return false;
@@ -86,7 +86,7 @@ class Database
         }
         $query_values = implode(",", $set_query);
         $q = "UPDATE $table SET $query_values WHERE id=$id";
-        if ($this->ExecuteQuery($q) && $this->affected > 0) {
+        if ($this->executeQuery($q) && $this->affected > 0) {
             return true;
         } else {
             return false;
@@ -97,7 +97,7 @@ class Database
     {
         $q = "DELETE FROM $table WHERE $table.$id=$id_value";
         // echo $q;
-        if ($this->ExecuteQuery($q)) {
+        if ($this->executeQuery($q)) {
             return true;
         } else {
             return false;
