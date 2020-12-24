@@ -4,12 +4,13 @@ class Database
 {
     private $hostname = "127.0.0.1";
     private $username = "root";
-    private $password = "toor";
+    private $password = "";
     private $dbname;
     private $dblink;
     private $result;
     private $records;
     private $affected;
+    private $error;
 
     function __construct($par_dbname)
     {
@@ -27,30 +28,42 @@ class Database
         $this->dblink->set_charset("utf8");
     }
 
+
     function executeQuery($query)
     {
         $this->result = $this->dblink->query($query);
         if ($this->result) {
             if (isset($this->result->num_rows)) {
-                $this->records = $this->result->num_rows;
+                $this->records = $this->result->num_rows; //koliko postoji redova-num_rows
             }
             if (isset($this->result->affected_rows)) {
-                $this->affected = $this->result->affected_rows;
+                $this->affected = $this->result->affected_rows; //promena-affected_rows
             }
             return true;
         } else {
+            $this->error = $this->dblink->error;
             return false;
         }
     }
+    
 
     function getResult()
     {
         return $this->result;
     }
+    //SELECT * FROM kursevi
 
-    function select($table, $rows = "*", $where = null, $order = null)
+    function getError() {
+        return $this->error;
+    }
+
+    function getInsertId() {
+        return $this->dblink->insert_id;
+    }
+
+    function select($table, $columns= "*", $where = null, $order = null)
     {
-        $q = 'SELECT ' . $rows . ' FROM ' . $table;
+        $q = 'SELECT ' . $columns. ' FROM ' . $table;
         if ($where != null) {
             $q .= ' WHERE ' . $where;
         }
@@ -61,13 +74,13 @@ class Database
         $this->executeQuery($q);
     }
 
-    function insert($table, $rows, $values)
+    function insert($table, $columns, $values)
     {
-        $query_values = implode(',', $values);
         $q = 'INSERT INTO ' . $table;
-        if ($rows != null) {
-            $q .= '(' . $rows . ')';
+        if ($columns != null) {
+            $q .= '(' . implode(', ', $columns) . ')';
         }
+        $query_values = "'" . implode("', '", $values) . "'";
         $q .= " VALUES($query_values)";
         // echo($q);
         if ($this->executeQuery($q)) {

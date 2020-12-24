@@ -9,38 +9,70 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous">
     </script>
 
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <?php
-    // TODO: uzmi iz baze
-    $kursevi = array(
-        array(
-            'id' => 1,
-            'instrument_ime' => 'Gitara',
-            'profesor_ime' => 'Jelisaveta Ostojic'
-        ),
-        array(
-            'id' => 2,
-            'instrument_ime' => 'Klavir',
-            'profesor_ime' => 'Veljko Trifunovic'
-        ),
-        array(
-            'id' => 3,
-            'instrument_ime' => 'Violina',
-            'profesor_ime' => 'Miona Petrovic'
-        ),
-        array(
-            'id' => 4,
-            'instrument_ime' => 'Bubnjevi',
-            'profesor_ime' => 'Goran Markovic'
-        ), array(
-            'id' => 5,
-            'instrument_ime' => 'Flauta',
-            'profesor_ime' => 'Olga Petrov'
-        )
-    );
-    ?>
+<?php
+    // spremi bazu za koriscenje
+    require('database.php'); //dostupnost database.php ovde
+    $db = new Database('muzickaskola');
+
+    // proveri da li je bio neki POST
+    if (isset($_POST['akcija'])) {
+        switch ($_POST['akcija']) {
+        case 'ucenik':
+            $columns = ['ime', 'prezime', 'datum_rodjenja', 'telefon'];
+            $values = [$_POST['ime'], $_POST['prezime'], $_POST['datum_rodjenja'], $_POST['telefon']];
+            if (! $db->insert('ucenici', $columns, $values)) {
+                echo 'Greska u: ' . $db->getError();
+            }
+
+            if (isset($_POST['kursevi'])) {
+                $ucenik_id = $db->getInsertId();
+                $columns = ['u_id', 'k_id', 'datum_upisa' ];
+                foreach ($_POST['kursevi'] as $kurs_id) {
+                    if (! $db->insert('ucenici_kursevi', $columns, [$ucenik_id, $kurs_id, date('Y-m-d')])) {
+                        echo 'Greska u_k: ' . $db->getError();
+                    }
+                }
+            }
+        break;
+        case 'kurs':
+            $columns = ['instrument_ime', 'profesor_ime'];
+            $values = [$_POST['instrument_ime'], $_POST['profesor_ime']];
+            if (! $db->insert('kursevi', $columns, $values)) {
+                echo 'Greska k: ' . $db->getError();
+            }
+        break;
+        default: echo "def"; 
+        break;
+        }
+    }
+
+    // dohvati sve kurseve
+    $db->select('kursevi');
+    $kursevi = $db->getResult();
+?>
+    <form action="" method="POST">
+        <h1>➕ Dodaj novi kurs 🎻</h1>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Instrument</th>
+                    <th>Ime profesora</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <input type="hidden" name="akcija" value="kurs" />
+                    <td><input type="text" name="instrument_ime" /></td>
+                    <td><input type="text" name="profesor_ime" /></td>
+                </tr>
+        </table>
+        <input type="submit" value="Dodaj" />
+    </form>
+
     <form action="" method="POST">
         <h1>➕ Dodaj novog ucenika 👩‍🎓</h1>
         <table class="table table-bordered">
@@ -55,13 +87,14 @@
             </thead>
             <tbody>
                 <tr>
+                    <input type="hidden" name="akcija" value="ucenik" />
                     <td><input type="text" name="ime" /></td>
                     <td><input type="text" name="prezime" /></td>
                     <td><input type="text" name="datum_rodjenja" /></td>
                     <td><input type="text" name="telefon" /></td>
                     <td>
                         <?php foreach ($kursevi as $kurs) : ?>
-                            <input type="checkbox" id="<?php echo $kurs['id']; ?>" name="kursevi" value="<?php echo $kurs['id'] ?>">
+                            <input type="checkbox" id="<?php echo $kurs['id']; ?>" name="kursevi[]" value="<?php echo $kurs['id'] ?>">
                             <label for="<?php echo $kurs['id'] ?>"><?php echo $kurs['instrument_ime'] . " (" . $kurs['profesor_ime'] . ")"; ?></label><br>
                         <?php endforeach; ?>
                     </td>
@@ -79,6 +112,19 @@
     </select>
     <p> </p>
 
+<?php
+    // dohvati sve ucenike i njihove kurseve
+    $db->executeQuery('
+        select u.*, group_concat(k.instrument_ime, " @ ", k.profesor_ime) as kursevi
+        from ucenici u
+          left join ucenici_kursevi uk
+                    on u.id = uk.u_id
+               join kursevi k
+                    on uk.k_id = k.id 
+        group by u.id;
+    ');
+    $ucenici = $db->getResult();
+?>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -92,89 +138,40 @@
             </tr>
         </thead>
         <tbody>
-            <?php
-            // TODO: uzmi iz baze
-            $ucenici = array(
-                array(
-                    'id' => 1,
-                    'ime' => 'Milos',
-                    'prezime' => 'Bajagic',
-                    'datum_rodjenja' => date('d.m.Y', mktime(0, 0, 0, 4, 5, 2006)),
-                    'telefon' => '064999666',
-                    'datum_upisa' => date('d.m.Y', mktime(0, 0, 0, 6, 7, 2020)),
-                    'kursevi' => array(
-                        array(
-                            'kurs_ime' => 'Gitara',
-                            'profesor_ime' => 'Jelisaveta Ostojic'
-                        )
-                    )
-                ),
-                array(
-                    'id' => 2,
-                    'ime' => 'Milica',
-                    'prezime' => 'Jakovljevic',
-                    'datum_rodjenja' => date('d.m.Y', mktime(0, 0, 0, 8, 3, 1998)),
-                    'telefon' => '063305904',
-                    'datum_upisa' => date('d.m.Y', mktime(0, 0, 0, 1, 7, 2020)),
-                    'kursevi' => array(
-                        array(
-                            'kurs_ime' => 'Violona',
-                            'profesor_ime' => 'Miona Petrovic'
-                        )
-                    )
-                ),
-                array(
-                    'id' => 3,
-                    'ime' => 'Jana',
-                    'prezime' => 'Djurdjevic',
-                    'datum_rodjenja' => date('d.m.Y', mktime(0, 0, 0, 5, 10, 1998)),
-                    'telefon' => '0649517695',
-                    'datum_upisa' => date('d.m.Y', mktime(0, 0, 0, 7, 7, 2020)),
-                    'kursevi' => array(
-                        array(
-                            'kurs_ime' => 'Bubnjevi',
-                            'profesor_ime' => 'Goran Markovic'
-                        )
-                    )
-                )
-            );
+        <?php
+        // ispisi sve ucenike
+        foreach ($ucenici as $ucenik) :
+        ?>
+            <tr>
+                <td><?php echo $ucenik['ime']; ?></td>
+                <td><?php echo $ucenik['prezime']; ?></td>
+                <td><?php echo $ucenik['datum_rodjenja']; ?></td>
+                <td><?php echo $ucenik['telefon']; ?></td>
+                <td><?php echo $ucenik['datum_upisa']; ?></td>
+                <td>
+                    <ul><?php
+                        foreach (explode(',', $ucenik['kursevi']) as $kurs) :
+                            [$instrument_ime, $profesor_ime] = explode('@', $kurs);
+                            echo "<li>" . $instrument_ime . " @ " . $profesor_ime . "</li>";
+                        endforeach;
+                        ?>
+                    </ul>
+                </td>
+                <td>
+                      <a href="obrisi.php?id=<?php echo $ucenik['id']; ?>">
+                    <div class="ikonica delete" />
+                      </a>
+                    <a href="izmeni.php?id=<?php echo $ucenik['id'] ?>">
+                    <div class="ikonica edit">
+                    </div>
+                    </a>
+                </td>
+            </tr>
 
-            foreach ($ucenici as $ucenik) :
-
-            ?>
-                <tr>
-                    <td><?php echo $ucenik['ime']; ?></td>
-                    <td><?php echo $ucenik['prezime']; ?></td>
-                    <td><?php echo $ucenik['datum_rodjenja']; ?></td>
-                    <td><?php echo $ucenik['telefon']; ?></td>
-                    <td><?php echo $ucenik['datum_upisa']; ?></td>
-                    <td>
-                        <ul><?php
-                            foreach ($ucenik['kursevi'] as $kurs) :
-                                echo "<li>" . $kurs['kurs_ime'] . " (" . $kurs['profesor_ime'] . ")</li>";
-                            endforeach;
-                            ?>
-                        </ul>
-                    </td>
-                    <td>
-                        <a href="obrisi.php?id=<?php echo $ucenik['id']; ?>">
-                            <img src="assets/refresh-arrows.png" width="20px" height="20px" />
-                        </a>
-                        <a href="izmeni.php?id=<?php echo $ucenik['id'] ?>">
-                            <img src="assets/refresh-arrows.png" width="20px" height="20px" />
-                        </a>
-                    </td>
-                </tr>
-
-            <?php endforeach; ?>
+        <?php endforeach; ?>
 
         </tbody>
     </table>
-
-</body>
-
-</html>
-
 <script>
     // kreiramo niz blokova, odnosno niz svih id vrednosti div sekcija
     var nizBlokova = ["get_odgovor", "novosti_post", "kategorije_post", "brisanje_reda", "kategorije_put", "novosti_put", "greska"];
@@ -400,3 +397,8 @@
         }
     }
 </script>
+
+</body>
+
+</html>
+

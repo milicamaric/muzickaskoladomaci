@@ -1,0 +1,13 @@
+div.ikonica {
+  background-size: 12px 12px;
+  width: 12px;
+  height: 12px;
+}
+
+div.delete {
+  background-image: url("assets/delete.svg");
+}
+
+div.edit {
+  background-image: url("assets/edit.svg");
+}
