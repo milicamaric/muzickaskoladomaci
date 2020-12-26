@@ -28,7 +28,6 @@ class Database
         $this->dblink->set_charset("utf8");
     }
 
-
     function executeQuery($query)
     {
         $this->result = $this->dblink->query($query);
@@ -51,7 +50,6 @@ class Database
     {
         return $this->result;
     }
-    //SELECT * FROM kursevi
 
     function getError() {
         return $this->error;
@@ -90,25 +88,9 @@ class Database
         }
     }
 
-    function update($table, $id, $keys, $values)
+    function delete($table, $id_value)
     {
-        $query_values = "";
-        $set_query = array();
-        for ($i = 0; $i < sizeof($keys); $i++) {
-            $set_query[] = "$keys[$i] = $values[$i]";
-        }
-        $query_values = implode(",", $set_query);
-        $q = "UPDATE $table SET $query_values WHERE id=$id";
-        if ($this->executeQuery($q) && $this->affected > 0) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    function delete($table, $id, $id_value)
-    {
-        $q = "DELETE FROM $table WHERE $table.$id=$id_value";
+        $q = "DELETE FROM $table WHERE $table.id = $id_value";
         // echo $q;
         if ($this->executeQuery($q)) {
             return true;

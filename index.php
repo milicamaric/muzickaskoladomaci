@@ -5,8 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Muzicka skola</title>
-
-    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -40,6 +38,11 @@
             $values = [$_POST['instrument_ime'], $_POST['profesor_ime']];
             if (! $db->insert('kursevi', $columns, $values)) {
                 echo 'Greska k: ' . $db->getError();
+            }
+        break;
+        case 'delete_ucenik':
+            if (! $db->delete('ucenici', $_POST['u_id'])) {
+                echo 'Greska delete u: ' . $db->getError();
             }
         break;
         default: echo "def"; 
@@ -157,13 +160,11 @@
                     </ul>
                 </td>
                 <td>
-                      <a href="obrisi.php?id=<?php echo $ucenik['id']; ?>">
-                    <div class="ikonica delete" />
-                      </a>
-                    <a href="izmeni.php?id=<?php echo $ucenik['id'] ?>">
-                    <div class="ikonica edit">
-                    </div>
-                    </a>
+                  <form action="" method="POST" onsubmit="return confirm('Da li ste sigurni?');">
+                    <input type="hidden" name="akcija" value="delete_ucenik" />
+                    <input type="hidden" name="u_id" value="<?php echo $ucenik['id']; ?>" />
+                    <input type="submit" value="Ispisi iz skole" />
+                  </form>
                 </td>
             </tr>
 

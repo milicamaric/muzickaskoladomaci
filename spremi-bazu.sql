@@ -62,8 +62,8 @@ VALUES
     u_id INT NOT NULL,
     k_id INT NOT NULL,
     datum_upisa DATE NULL,
-    FOREIGN KEY (u_id) REFERENCES ucenici(id),
-    FOREIGN KEY (k_id) REFERENCES kursevi(id),
+    FOREIGN KEY (u_id) REFERENCES ucenici(id) ON DELETE CASCADE,
+    FOREIGN KEY (k_id) REFERENCES kursevi(id) ON DELETE CASCADE,
     PRIMARY KEY (u_id, k_id)
   );
 INSERT INTO
