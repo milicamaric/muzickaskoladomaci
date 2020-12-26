@@ -22,8 +22,8 @@
     if (isset($_POST['akcija'])) {
         switch ($_POST['akcija']) {
         case 'ucenik':
-            $columns = ['ime', 'prezime', 'datum_rodjenja', 'telefon'];
-            $values = [$_POST['ime'], $_POST['prezime'], $_POST['datum_rodjenja'], $_POST['telefon']];
+            $columns = ['ime', 'prezime', 'datum_rodjenja', 'telefon', 'datum_upisa'];
+            $values = [$_POST['ime'], $_POST['prezime'], $_POST['datum_rodjenja'], $_POST['telefon'], $_POST['datum_upisa']];
             if (! $db->insert('ucenici', $columns, $values)) {
                 echo 'Greska u: ' . $db->getError();
             }
@@ -82,6 +82,7 @@
                     <th>Prezime</th>
                     <th>Datum rodjenja</th>
                     <th>Kontakt telefon</th>
+                    <th>Datum upisa</th>
                     <th>Kursevi</th>
                 </tr>
             </thead>
@@ -92,6 +93,7 @@
                     <td><input type="text" name="prezime" /></td>
                     <td><input type="text" name="datum_rodjenja" /></td>
                     <td><input type="text" name="telefon" /></td>
+                    <td><input type="text" name="datum_upisa" value="<?php echo date('Y-m-d');?>"/></td>
                     <td>
                         <?php foreach ($kursevi as $kurs) : ?>
                             <input type="checkbox" id="<?php echo $kurs['id']; ?>" name="kursevi[]" value="<?php echo $kurs['id'] ?>">
