@@ -15,11 +15,10 @@ Profesori mogu drzati vise kurseva.
 Projekat se pokrece sa predefinisanom listom dostupnih instrumenata.
 
 Funkcionalnosti koje je moguce koristiti putem web interfejsa:
-* Dodavanje kursa (jedan instrument jedan profesor)
-* [PHP.OO, form] Dodavanje ucenika i upis na zeljene kurseve
-* [AJAX] Menjanje kurseva koje ucenik pohadja
+* [PHP.OO, select] Izlistavanje svih ucenika
+* [form] Dodavanje kursa (jedan instrument jedan profesor)
+* [PHP.OO, form, PHP.date] Dodavanje ucenika i upis na zeljene kurseve
 * [PHP.$_DELETE] Ispisivanje ucenika iz skole
-* [AJAX, pretraga, sortiranje, PHP.date] Prikaz ucenika koji pohadjaju odredjeni kurs
 
 ## Pokretanje programa
 
